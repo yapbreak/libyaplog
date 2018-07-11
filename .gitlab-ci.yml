@@ -1,0 +1,43 @@
+before_script:
+    - ./autogen.sh
+
+stages:
+    - build
+    - test
+    - deploy
+
+build:
+    stage: build
+    script:
+        - ./configure
+        - make
+
+check:
+    stage: test
+    script:
+        - ./configure --enable-coverage
+        - make coverage | tail -10
+
+distribute:
+    stage: deploy
+    script:
+        - ./configure
+        - make dist
+    artifacts:
+        paths:
+            - libyaplog-*.tar.gz
+        expire_in: 1 week
+    except:
+        - tags
+
+distribute-release:
+    stage: deploy
+    script:
+        - ./configure
+        - make dist
+    artifacts:
+        paths:
+            - libyaplog-*.tar.gz
+    only:
+        - tags
+

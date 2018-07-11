@@ -1,0 +1,20 @@
+/**
+ * \mainpage libyaplog
+ *
+ * \author Adrien Oliva
+ * \version @PACKAGE_VERSION@
+ *
+ * \brief Simple C++ logger
+
+ * \section build Building library
+ *
+ * To build library run the classical:
+ *
+ * ```
+ * ./autogen.sh
+ * ./configure
+ * make
+ * make check
+ * sudo make install
+ * ```
+ */

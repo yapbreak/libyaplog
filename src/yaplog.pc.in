@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: Simple C++ logger
+URL: @PACKAGE_URL@
+Version: @VERSION@
+
+Requires:
+Libs: -L${libdir} -lyaplog
+Cflags: -I${includedir}
