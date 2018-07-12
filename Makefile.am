@@ -23,13 +23,13 @@ lcov-coverage-clean:
 	lcov --compat-libtool --directory "$(top_srcdir)/src" --zerocounters --output-file "coverage-report.info"
 
 lcov-coverage-filter:
-	lcov --rc lcov_branch_coverage=1 --compat-libtool --directory "$$(readlink -f "$(top_builddir)/")" --capture --output-file "coverage-report.info"
-	lcov --rc lcov_branch_coverage=1 --extract "coverage-report.info" "$$(readlink -f "$(top_srcdir)")/*" --output-file "coverage-report2.info"
-	lcov --rc lcov_branch_coverage=1 --remove "coverage-report2.info" "*utests*" "*demo*" --output-file "coverage-report.info"
+	lcov --rc lcov_branch_coverage=0 --compat-libtool --directory "$$(readlink -f "$(top_builddir)/")" --capture --output-file "coverage-report.info"
+	lcov --rc lcov_branch_coverage=0 --extract "coverage-report.info" "$$(readlink -f "$(top_srcdir)")/*" --output-file "coverage-report2.info"
+	lcov --rc lcov_branch_coverage=0 --remove "coverage-report2.info" "*utests*" "*demo*" --output-file "coverage-report.info"
 
 if GENHTML
 
-GENHTML_EXTRA = --rc lcov_branch_coverage=1 --highlight --legend --demangle-cpp
+GENHTML_EXTRA = --rc lcov_branch_coverage=0 --highlight --legend --demangle-cpp
 if PERLGD
 GENHTML_EXTRA += --frames
 endif # PERLGD

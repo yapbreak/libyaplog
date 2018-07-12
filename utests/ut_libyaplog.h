@@ -429,4 +429,59 @@ TEST(customout, file_levelgreater)
                           );
 };
 
+TEST_GROUP(stdoutlog)
+{
+    void setup()
+    {
+        setenv("CSER_LOGDESTINATION", "stdout", 1);
+        setenv("CSER_LOGLEVEL", "9", 1);
+    }
+
+    void teardown()
+    {
+        unsetenv("CSER_LOGDESTINATION");
+        unsetenv("CSER_LOGLEVEL");
+    }
+};
+
+TEST(stdoutlog, alllogs)
+{
+    FLOG() << "Fatal";
+    ALOG() << "Alert";
+    CLOG() << "Crit";
+    ELOG() << "Error";
+    WLOG() << "Warning";
+    NLOG() << "Notice";
+    ILOG() << "Info";
+    DLOG() << "Debug";
+    TLOG() << "Trace";
+};
+
+TEST_GROUP(stderrlog)
+{
+    void setup()
+    {
+        setenv("CSER_LOGDESTINATION", "stderr", 1);
+        setenv("CSER_LOGLEVEL", "9", 1);
+    }
+
+    void teardown()
+    {
+        unsetenv("CSER_LOGDESTINATION");
+        unsetenv("CSER_LOGLEVEL");
+    }
+};
+
+TEST(stderrlog, alllogs)
+{
+    FLOG() << "Fatal";
+    ALOG() << "Alert";
+    CLOG() << "Crit";
+    ELOG() << "Error";
+    WLOG() << "Warning";
+    NLOG() << "Notice";
+    ILOG() << "Info";
+    DLOG() << "Debug";
+    TLOG() << "Trace";
+};
 #endif /* end of include guard: UT_LIBYAPLOG_H_SHF9IC0C */
