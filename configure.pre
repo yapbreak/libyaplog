@@ -169,6 +169,7 @@ AC_CONFIG_FILES([Makefile
                  utests/Makefile
                  utests/fixtures/Makefile
                  src/Makefile
+                 src/yaplog/Makefile
                  src/yaplog.pc
                  doc/Makefile
                  doc/Doxyfile
