@@ -12,8 +12,8 @@ check_PROGRAMS = $(TESTS)
 
 ut_libyaplog_xtest_SOURCES  = ut_libyaplog.h
 ut_libyaplog_xtest_SOURCES += main.cpp
-ut_libyaplog_xtest_CFLAGS = $(TESTCFLAGS)
-ut_libyaplog_xtest_CXXFLAGS = $(TESTCXXFLAGS)
+ut_libyaplog_xtest_CFLAGS = $(TESTCFLAGS) -include $(TEST_ROOT)/fixtures/fixtures.h
+ut_libyaplog_xtest_CXXFLAGS = $(TESTCXXFLAGS) -include $(TEST_ROOT)/fixtures/fixtures.h
 ut_libyaplog_xtest_LDFLAGS = $(TESTLDFLAGS)
 ut_libyaplog_xtest_LDADD  = $(top_builddir)/src/libyaplog.la
 ut_libyaplog_xtest_LDADD += $(top_builddir)/utests/fixtures/libfixtures.la
