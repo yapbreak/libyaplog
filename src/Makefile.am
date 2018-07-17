@@ -8,6 +8,7 @@ lib_LTLIBRARIES = libyaplog.la
 libyaplog_la_SOURCES  = yaplog.h
 libyaplog_la_SOURCES += yaplog.cpp
 libyaplog_la_LIBADD = yaplog/libinternalyaplog.la
+libyaplog_la_LDFLAGS = $(LIBVERSION)
 
 include_HEADERS = yaplog.h
 
