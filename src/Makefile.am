@@ -6,6 +6,7 @@ SUBDIRS = yaplog
 
 lib_LTLIBRARIES = libyaplog.la
 libyaplog_la_SOURCES  = yaplog.h
+libyaplog_la_SOURCES += yaplog.cpp
 libyaplog_la_LIBADD = yaplog/libinternalyaplog.la
 
 include_HEADERS = yaplog.h

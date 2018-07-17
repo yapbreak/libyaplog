@@ -6,6 +6,9 @@
 
 #include <ostream>
 
+#define YAPLOG_LEVEL_DEFAULT "LOGLEVEL"
+#define YAPLOG_DEST_DEFAULT  "LOGDESTINATION"
+
 namespace logger {
 
     /**
@@ -74,15 +77,26 @@ namespace logger {
             */
             void print_header();
 
+        protected:
+            /**
+            * @brief Get configured output stream where log are pat.
+            *
+            * @param destination Environment variable to use.
+            *
+            * @return Output stream to be used by logger, depending on
+            *         environment variable given by `destination`.
+            */
+            static std::ostream *getOstream(const char *destination);
+
         public:
             /**
             * @brief Get configured output stream where log are put.
             *
             * @return Output stream to be used by logger, depending on
-            *         `CSER_LOGDESTINATION` environment variable.
+            *         configured environment variable.
             *
             * If no environment variable is set, default is std::cerr.
-            * When `CSER_LOGDESTINATION` is set to `stdout` or `stderr`, stream
+            * When configured env var is set to `stdout` or `stderr`, stream
             * is respectively redirected to std::cout or std::cerr, otherwise,
             * logger considers variable content as a filename and try to open
             * it in append mode. If file does not exists, logger create file.
@@ -100,15 +114,15 @@ namespace logger {
             /**
             * @brief Get configured logger level to show.
             *
-            * @return Log level used by logger, depending on `CSER_LOGLEVEL`
+            * @return Log level used by logger, depending on configured
             *         environment variable.
             *
-            * When `CSER_LOGLEVEL` is set to any number between 0 and 9, logger
-            * directly use the log level and print to output every log message
-            * with level lower or equal to the given system log level.
-            * If `CSER_LOGLEVEL` is set to a number lower than 0, 0 is used.
-            * If `CSER_LOGLEVEL` is set to a number higher than 9, 9 is used.
-            * If `CSER_LOGLEVEL` is not set to a number, 0 is used.
+            * When configured env var is set to any number between 0 and 9,
+            * logger directly use the log level and print to output every log
+            * message with level lower or equal to the given system log level.
+            * If `LOGLEVEL` is set to a number lower than 0, 0 is used.
+            * If `LOGLEVEL` is set to a number higher than 9, 9 is used.
+            * If `LOGLEVEL` is not set to a number, 0 is used.
             * If no environment variable is set, default is 0.
             */
             static log_level getSystemLevel();
@@ -130,6 +144,52 @@ namespace logger {
             * @brief System log level.
             */
             log_level m_systemlevel;
+
+        protected:
+            /**
+            * @brief Get environment variable to check for log file destination.
+            *
+            * @return Destination environment variable
+            */
+            static const char *getDestinationVariable();
+            /**
+            * @brief Get environment variable to check for log level to show.
+            *
+            * @return Level environment variable
+            */
+            static const char *getLevelVariable();
+
+            /**
+            * @brief Environment variable name of log destination
+            *        configuration.
+            */
+            static char *s_destination;
+            /**
+            * @brief Environment variable name of log level configuration.
+            */
+            static char *s_level;
+
+        public:
+            /**
+            * @brief Set environment variable to check for log file destination.
+            *
+            * @param dest New destination environement variable
+            */
+            static void setDestinationVariable(const char *dest);
+            /**
+            * @brief Set environment variable to check for log level.
+            *
+            * @param level New level environement variable
+            */
+            static void setLevelVariable(const char *level);
+            /**
+            * @brief Unset environment variable to check for log file destination.
+            */
+            static void unsetDestinationVariable();
+            /**
+            * @brief Unset environment variable to check for log level.
+            */
+            static void unsetLevelVariable();
     };
 
     /**

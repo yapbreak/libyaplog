@@ -87,4 +87,16 @@
                                    logger::InternalLog::getOstream(), \
                                    logger::InternalLog::getSystemLevel())
 
+namespace logger {
+    /**
+    * @brief Set environment variable to check for log file destination.
+    *
+    * @param dest New destination environement variable
+    */
+    void setDestinationVariable(const char *dest);
+    void setLevelVariable(const char *level);
+    void unsetDestinationVariable();
+    void unsetLevelVariable();
+};
+
 #endif /* end of include guard: YAPLOG_H_UGV90DZC */

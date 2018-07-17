@@ -1,10 +1,13 @@
-#include "internallog.h"
+#include "yaplog.h"
 
 #include <iostream>
 #include <cstring>
 #include <fstream>
 
 using namespace logger;
+
+char *InternalLog::s_destination = NULL;
+char *InternalLog::s_level = NULL;
 
 InternalLog::InternalLog(log_level level, const log_location &loc,
                          std::ostream *destination,
@@ -26,13 +29,6 @@ InternalLog::~InternalLog()
     closeOstream(m_output);
 }
 
-/**
-* @brief Convert a log level to a single character.
-*
-* @param l Loglevel to convert.
-*
-* @return Single character symbolizes log level.
-*/
 char InternalLog::char_from_level(enum log_level l)
 {
     switch (l) {
@@ -59,21 +55,6 @@ char InternalLog::char_from_level(enum log_level l)
     }
 }
 
-/**
-* @brief Prepare and print log prefix.
-*
-* Any log use the following prefix:
-* - "[X] file:line(function) "
-*
-* where:
-*   - X is one of the following character ('F' for fatal, 'A' for
-*     alert, 'C' for critical, 'E' for error, 'W' for warning, 'N'
-*     for notice, 'I' for information, 'D' for debug, 'T' for trace
-*     or a space for any other level.
-*   - file is the name of the file where log append.
-*   - line is the line number where log append.
-*   - function is the function name where log append.
-*/
 void InternalLog::print_header()
 {
     (*m_output) << "[" << char_from_level(m_level) << "] "
@@ -82,64 +63,44 @@ void InternalLog::print_header()
                 << m_location.m_function << ") ";
 }
 
-/**
-* @brief Get configured output stream where log are put.
-*
-* @return Output stream to be used by logger, depending on
-*         `CSER_LOGDESTINATION` environment variable.
-*
-* If no environment variable is set, default is std::cerr.
-* When `CSER_LOGDESTINATION` is set to `stdout` or `stderr`, stream
-* is respectively redirected to std::cout or std::cerr, otherwise,
-* logger considers variable content as a filename and try to open
-* it in append mode. If file does not exists, logger create file.
-* Upon failure, logger falls back to std::cerr.
-*/
-std::ostream *InternalLog::getOstream()
+std::ostream *InternalLog::getOstream(const char *destination)
 {
-    const char *cser_logdestination = std::getenv("CSER_LOGDESTINATION");
-    if (cser_logdestination == NULL) {
+    if (destination == NULL) {
         return new std::ostream(std::cerr.rdbuf());
     } else {
-        if (strcmp(cser_logdestination, "stderr") == 0) {
+        if (strcmp(destination, "stderr") == 0) {
             return new std::ostream(std::cerr.rdbuf());
-        } else if (strcmp(cser_logdestination, "stdout") == 0) {
+        } else if (strcmp(destination, "stdout") == 0) {
             return new std::ostream(std::cout.rdbuf());
         } else {
-            return new std::ofstream(cser_logdestination,
-                                     std::ofstream::app);
+            std::ofstream *ofs;
+            ofs = new std::ofstream(destination, std::ofstream::app);
+            if (ofs != NULL && ofs->is_open()) {
+                return ofs;
+            } else {
+                std::cerr << "Fail to open " << destination << std::endl;
+                delete ofs;
+                return new std::ostream(std::cerr.rdbuf());
+            }
         }
     }
     return new std::ostream(std::cerr.rdbuf());
 }
 
-/**
-* @brief Close the given output stream properly.
-*
-* @param os Output stream to close.
-*/
+std::ostream *InternalLog::getOstream()
+{
+    const char *logdestination = std::getenv(getDestinationVariable());
+    return getOstream(logdestination);
+}
+
 void InternalLog::closeOstream(std::ostream *os)
 {
     delete os;
 }
 
-/**
-* @brief Get configured logger level to show.
-*
-* @return Log level used by logger, depending on `CSER_LOGLEVEL`
-*         environment variable.
-*
-* When `CSER_LOGLEVEL` is set to any number between 0 and 9, logger
-* directly use the log level and print to output every log message
-* with level lower or equal to the given system log level.
-* If `CSER_LOGLEVEL` is set to a number lower than 0, 0 is used.
-* If `CSER_LOGLEVEL` is set to a number higher than 9, 9 is used.
-* If `CSER_LOGLEVEL` is not set to a number, 0 is used.
-* If no environment variable is set, default is 0.
-*/
 log_level InternalLog::getSystemLevel()
 {
-    const char *cser_loglevel = std::getenv("CSER_LOGLEVEL");
+    const char *cser_loglevel = std::getenv(getLevelVariable());
     if (cser_loglevel == NULL) {
         return log_level::none;
     } else {
@@ -154,4 +115,40 @@ log_level InternalLog::getSystemLevel()
             return log_level::none;
         }
     }
+}
+
+const char *InternalLog::getDestinationVariable()
+{
+    return s_destination ? s_destination : YAPLOG_DEST_DEFAULT;
+}
+
+const char *InternalLog::getLevelVariable()
+{
+    return s_level ? s_level : YAPLOG_LEVEL_DEFAULT;
+}
+
+void InternalLog::setDestinationVariable(const char *dest)
+{
+    unsetDestinationVariable();
+    s_destination = strdup(dest);
+}
+
+void InternalLog::setLevelVariable(const char *level)
+{
+    unsetLevelVariable();
+    s_level = strdup(level);
+}
+
+void InternalLog::unsetDestinationVariable()
+{
+    if (s_destination != NULL)
+        free(static_cast<void *>(s_destination));
+    s_destination = NULL;
+}
+
+void InternalLog::unsetLevelVariable()
+{
+    if (s_level != NULL)
+        free(static_cast<void *>(s_level));
+    s_level = NULL;
 }
