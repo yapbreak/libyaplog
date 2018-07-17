@@ -52,7 +52,11 @@ namespace logger {
     *
     * @return Reference to the used output stream.
     */
-    inline std::ostream &operator<<(std::ostream &out, const dump &data);
+    inline std::ostream &operator<<(std::ostream &out, const dump &data)
+    {
+        out << data.get_formatted_string();
+        return out;
+    }
 };
 
 #endif /* end of include guard: YAPLOG_DUMP_H_9LPSDK6A */

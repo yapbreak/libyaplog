@@ -80,9 +80,3 @@ std::string dump::get_formatted_string() const
 
     return output.str();
 }
-
-inline std::ostream &operator<<(std::ostream &out, const dump &data)
-{
-    out << data.get_formatted_string();
-    return out;
-}

@@ -2,6 +2,7 @@
 #define YAPLOG_H_UGV90DZC
 
 #include <yaplog/internallog.h>
+#include <yaplog/dump.h>
 
 /**
  * @brief Fatal log macro utility to print a fatal message on stderr.
