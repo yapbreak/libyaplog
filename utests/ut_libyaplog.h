@@ -53,6 +53,30 @@ TEST(internallog, withdata)
     delete log;
 };
 
+void check_file_content(const char *file, std::string &expected)
+{
+    FILE *f = fopen(file, "rb");
+    if (f != NULL) {
+        if (expected.size() != 0) {
+            char *content = new char[expected.size() + 1];
+            memset(content, 0, expected.size() + 1);
+            UNSIGNED_LONGS_EQUAL(1, fread(content, expected.size(), 1, f));
+            MEMCMP_EQUAL(expected.c_str(), content, expected.size());
+            delete [] content;
+        }
+
+        char extra[1024] = { };
+        size_t ret = fread(extra, 1, 1024, f);
+        if (ret != 0) {
+            FAIL(extra);
+        }
+        UNSIGNED_LONGS_EQUAL(0, ret);
+        fclose(f);
+    } else {
+        UNSIGNED_LONGS_EQUAL(0, expected.size());
+    }
+}
+
 TEST_GROUP(customout)
 {
     const char *destination = "unittests_customout.log";
@@ -69,31 +93,6 @@ TEST_GROUP(customout)
         unsetenv("LOGDESTINATION");
         unsetenv("LOGLEVEL");
     }
-
-    void check_file_content(const char *file)
-    {
-        FILE *f = fopen(file, "rb");
-        if (f != NULL) {
-            if (expected.size() != 0) {
-                char *content = new char[expected.size() + 1];
-                memset(content, 0, expected.size() + 1);
-                UNSIGNED_LONGS_EQUAL(1, fread(content, expected.size(), 1, f));
-                MEMCMP_EQUAL(expected.c_str(), content, expected.size());
-                delete [] content;
-            }
-
-            char extra[1024] = { };
-            size_t ret = fread(extra, 1, 1024, f);
-            if (ret != 0) {
-                FAIL(extra);
-            }
-            UNSIGNED_LONGS_EQUAL(0, ret);
-            fclose(f);
-        } else {
-            UNSIGNED_LONGS_EQUAL(0, expected.size());
-        }
-    }
-
 
     void init(const char *level) {
         setenv("LOGDESTINATION", destination, 1);
@@ -122,7 +121,7 @@ TEST(customout, nothing)
     TLOG() << "Trace";
 
     expected = std::string("");
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_invalidlevel)
@@ -139,7 +138,7 @@ TEST(customout, file_invalidlevel)
     givelog(log_level::trace) << "Trace";
 
     expected = std::string("");
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelnone)
@@ -156,7 +155,7 @@ TEST(customout, file_levelnone)
     givelog(log_level::trace) << "Trace";
 
     expected = std::string("");
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelnegative)
@@ -173,7 +172,7 @@ TEST(customout, file_levelnegative)
     givelog(log_level::trace) << "Trace";
 
     expected = std::string("");
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelfatal)
@@ -190,7 +189,7 @@ TEST(customout, file_levelfatal)
     givelog(log_level::trace) << "Trace";
 
     expected = std::string("[F] file2:38(function2) Fatal\n");
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelalert)
@@ -208,7 +207,7 @@ TEST(customout, file_levelalert)
 
     expected = std::string("[F] file2:38(function2) Fatal\n"
                            "[A] file2:38(function2) Alert\n");
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelcrit)
@@ -228,7 +227,7 @@ TEST(customout, file_levelcrit)
                            "[A] file2:38(function2) Alert\n"
                            "[C] file2:38(function2) Crit\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelerror)
@@ -249,7 +248,7 @@ TEST(customout, file_levelerror)
                            "[C] file2:38(function2) Crit\n"
                            "[E] file2:38(function2) Error\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelwarn)
@@ -271,7 +270,7 @@ TEST(customout, file_levelwarn)
                            "[E] file2:38(function2) Error\n"
                            "[W] file2:38(function2) Warning\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelnotice)
@@ -294,7 +293,7 @@ TEST(customout, file_levelnotice)
                            "[W] file2:38(function2) Warning\n"
                            "[N] file2:38(function2) Notice\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelinfo)
@@ -318,7 +317,7 @@ TEST(customout, file_levelinfo)
                            "[N] file2:38(function2) Notice\n"
                            "[I] file2:38(function2) Info\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_leveldebug)
@@ -343,7 +342,7 @@ TEST(customout, file_leveldebug)
                            "[I] file2:38(function2) Info\n"
                            "[D] file2:38(function2) Debug\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_leveltrace)
@@ -369,7 +368,7 @@ TEST(customout, file_leveltrace)
                            "[D] file2:38(function2) Debug\n"
                            "[T] file2:38(function2) Trace\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST(customout, file_levelgreater)
@@ -395,7 +394,7 @@ TEST(customout, file_levelgreater)
                            "[D] file2:38(function2) Debug\n"
                            "[T] file2:38(function2) Trace\n"
                           );
-    check_file_content(destination);
+    check_file_content(destination, expected);
 };
 
 TEST_GROUP(stdoutlog)
@@ -480,6 +479,51 @@ TEST(invalidfilelog, alllogs)
     ILOG() << "Info";
     DLOG() << "Debug";
     TLOG() << "Trace";
+};
+
+
+TEST_GROUP(customconfvariable)
+{
+    void setup()
+    {
+        logger::setDestinationVariable("MYCUSTOM_DEST");
+        logger::setLevelVariable("MYCUSTOM_LEVEL");
+        setenv("MYCUSTOM_DEST", "custom_output.log", 1);
+        setenv("MYCUSTOM_LEVEL", "9", 1);
+    }
+
+    void teardown()
+    {
+        unsetenv("LOGDESTINATION");
+        unsetenv("LOGLEVEL");
+        logger::unsetDestinationVariable();
+        logger::unsetLevelVariable();
+        unlink("custom_output.log");
+    }
+};
+
+TEST(customconfvariable, alllogs)
+{
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[W] file2:38(function2) Warning\n"
+                         "[N] file2:38(function2) Notice\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[D] file2:38(function2) Debug\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("custom_output.log", expected);
 };
 
 

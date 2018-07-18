@@ -1,9 +1,5 @@
 #include "yaplog.h"
 
-__attribute__((constructor)) static void yaplog_static_init()
-{
-}
-
 __attribute__((destructor)) static void yaplog_static_deinit()
 {
     logger::unsetDestinationVariable();
