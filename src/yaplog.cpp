@@ -17,6 +17,11 @@ void logger::setLevelVariable(const char *level)
     InternalLog::setLevelVariable(level);
 }
 
+void logger::setColorVariable(const char *color)
+{
+    InternalLog::setColorVariable(color);
+}
+
 void logger::unsetDestinationVariable()
 {
     InternalLog::unsetDestinationVariable();
@@ -25,4 +30,9 @@ void logger::unsetDestinationVariable()
 void logger::unsetLevelVariable()
 {
     InternalLog::unsetLevelVariable();
+}
+
+void logger::unsetColorVariable()
+{
+    InternalLog::unsetColorVariable();
 }

@@ -8,6 +8,7 @@ using namespace logger;
 
 char *InternalLog::s_destination = NULL;
 char *InternalLog::s_level = NULL;
+char *InternalLog::s_color = NULL;
 
 InternalLog::InternalLog(log_level level, const log_location &loc,
                          std::ostream *destination,
@@ -127,6 +128,11 @@ const char *InternalLog::getLevelVariable()
     return s_level ? s_level : YAPLOG_LEVEL_DEFAULT;
 }
 
+const char *InternalLog::getColorVariable()
+{
+    return s_color ? s_color : YAPLOG_COLOR_DEFAULT;
+}
+
 void InternalLog::setDestinationVariable(const char *dest)
 {
     unsetDestinationVariable();
@@ -137,6 +143,12 @@ void InternalLog::setLevelVariable(const char *level)
 {
     unsetLevelVariable();
     s_level = strdup(level);
+}
+
+void InternalLog::setColorVariable(const char *color)
+{
+    unsetColorVariable();
+    s_color = strdup(color);
 }
 
 void InternalLog::unsetDestinationVariable()
@@ -151,4 +163,11 @@ void InternalLog::unsetLevelVariable()
     if (s_level != NULL)
         free(static_cast<void *>(s_level));
     s_level = NULL;
+}
+
+void InternalLog::unsetColorVariable()
+{
+    if (s_color != NULL)
+        free(static_cast<void *>(s_color));
+    s_color = NULL;
 }
