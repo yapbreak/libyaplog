@@ -4,6 +4,7 @@ __attribute__((destructor)) static void yaplog_static_deinit()
 {
     logger::unsetDestinationVariable();
     logger::unsetLevelVariable();
+    logger::unsetColorVariable();
 }
 
 

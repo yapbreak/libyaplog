@@ -490,12 +490,16 @@ TEST_GROUP(customconfvariable)
         logger::setLevelVariable("MYCUSTOM_LEVEL");
         setenv("MYCUSTOM_DEST", "custom_output.log", 1);
         setenv("MYCUSTOM_LEVEL", "9", 1);
+        setenv("LOGLEVEL", "0", 1);
+        setenv("LOGDESTINATION", "stdout", 1);
     }
 
     void teardown()
     {
-        unsetenv("LOGDESTINATION");
+        unsetenv("MYCUSTOM_DEST");
+        unsetenv("MYCUSTOM_LEVEL");
         unsetenv("LOGLEVEL");
+        unsetenv("LOGDESTINATION");
         logger::unsetDestinationVariable();
         logger::unsetLevelVariable();
         unlink("custom_output.log");
@@ -503,6 +507,54 @@ TEST_GROUP(customconfvariable)
 };
 
 TEST(customconfvariable, alllogs)
+{
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    logger::unsetLevelVariable();
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    logger::setLevelVariable("MYCUSTOM_LEVEL");
+    givelog(log_level::info) << "Info";
+    logger::unsetDestinationVariable();
+    givelog(log_level::debug) << "Debug";
+    logger::setDestinationVariable("MYCUSTOM_DEST");
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("custom_output.log", expected);
+};
+
+
+TEST_GROUP(colorconf)
+{
+    void setup()
+    {
+        logger::setColorVariable("MYCUSTOM_COLOR");
+        setenv("LOGDESTINATION", "color_output.log", 1);
+        setenv("LOGLEVEL", "9", 1);
+    }
+
+    void teardown()
+    {
+        unsetenv("MYCUSTOM_COLOR");
+        logger::unsetColorVariable();
+        unlink("color_output.log");
+    }
+
+    void enablecolor(const char *value)
+    {
+        setenv("MYCUSTOM_COLOR", value, 1);
+    }
+};
+
+TEST(colorconf, alllogs_defaultcolor_settings)
 {
     givelog(log_level::fatal) << "Fatal";
     givelog(log_level::alert) << "Alert";
@@ -523,8 +575,85 @@ TEST(customconfvariable, alllogs)
                          "[D] file2:38(function2) Debug\n"
                          "[T] file2:38(function2) Trace\n"
                         );
-    check_file_content("custom_output.log", expected);
+    check_file_content("color_output.log", expected);
 };
 
+TEST(colorconf, alllogs_color_off_settings)
+{
+    enablecolor("0");
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[W] file2:38(function2) Warning\n"
+                         "[N] file2:38(function2) Notice\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[D] file2:38(function2) Debug\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("color_output.log", expected);
+};
+
+TEST(colorconf, alllogs_color_on_settings)
+{
+    enablecolor("1");
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[W] file2:38(function2) Warning\n"
+                         "[N] file2:38(function2) Notice\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[D] file2:38(function2) Debug\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("color_output.log", expected);
+};
+
+TEST(colorconf, alllogs_color_unauth_values_settings)
+{
+    enablecolor("2");
+    givelog(log_level::fatal) << "Fatal";
+    enablecolor("-1");
+    givelog(log_level::alert) << "Alert";
+    enablecolor("foo");
+    givelog(log_level::crit) << "Crit";
+    enablecolor("bar");
+    givelog(log_level::error) << "Error";
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[W] file2:38(function2) Warning\n"
+                         "[N] file2:38(function2) Notice\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[D] file2:38(function2) Debug\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("color_output.log", expected);
+};
 
 #endif /* end of include guard: UT_LIBYAPLOG_H_SHF9IC0C */
