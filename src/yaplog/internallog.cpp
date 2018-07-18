@@ -4,6 +4,8 @@
 #include <cstring>
 #include <fstream>
 
+#include "color.h"
+
 using namespace logger;
 
 char *InternalLog::s_destination = NULL;
@@ -58,10 +60,13 @@ char InternalLog::char_from_level(enum log_level l)
 
 void InternalLog::print_header()
 {
-    (*m_output) << "[" << char_from_level(m_level) << "] "
+    bool color = getColor();
+    (*m_output) << color_start(color)
+                << "[" << char_from_level(m_level) << "] "
                 << m_location.m_file << ":"
                 << m_location.m_line << "("
-                << m_location.m_function << ") ";
+                << m_location.m_function << ")"
+                << color_end(color) << " ";
 }
 
 std::ostream *InternalLog::getOstream(const char *destination)
@@ -170,4 +175,56 @@ void InternalLog::unsetColorVariable()
     if (s_color != NULL)
         free(static_cast<void *>(s_color));
     s_color = NULL;
+}
+
+bool InternalLog::getColor()
+{
+    const char *color = std::getenv(getColorVariable());
+    if (color == NULL) {
+        return false;
+    } else {
+        try {
+            int value = std::stoi(color);
+            return (value == 1);
+        } catch (std::exception &) {
+            return false;
+        }
+    }
+}
+
+const char *InternalLog::color_start(bool color)
+{
+    if (!color)
+        return "";
+
+    switch (m_level) {
+        case fatal:
+            return ANSI_COLOR_FATAL;
+        case alert:
+            return ANSI_COLOR_ALERT;
+        case crit:
+            return ANSI_COLOR_CRITIC;
+        case error:
+            return ANSI_COLOR_ERROR;
+        case warn:
+            return ANSI_COLOR_WARNING;
+        case notice:
+            return ANSI_COLOR_NOTICE;
+        case info:
+            return ANSI_COLOR_INFORMATION;
+        case debug:
+            return ANSI_COLOR_DEBUG;
+        case trace:
+            return ANSI_COLOR_TRACE;
+        default:
+            return "";
+    }
+}
+
+const char *InternalLog::color_end(bool color)
+{
+    if (color)
+        return ANSI_COLOR_RESET;
+    else
+        return "";
 }

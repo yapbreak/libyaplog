@@ -77,6 +77,24 @@ namespace logger {
             *   - function is the function name where log append.
             */
             void print_header();
+            /**
+            * @brief Depending on color configuration flag, get ANSI escape
+            *        code of current log level.
+            *
+            * @param color Color configuration flag.
+            *
+            * @return ANSI escape sequence.
+            */
+            const char *color_start(bool color);
+            /**
+            * @brief Depending on color configuration flag, get ANSI escape
+            *        code to reset color.
+            *
+            * @param color Color configuration flag.
+            *
+            * @return ANSI escape reset sequence.
+            */
+            const char *color_end(bool color);
 
         protected:
             /**
@@ -88,6 +106,12 @@ namespace logger {
             *         environment variable given by `destination`.
             */
             static std::ostream *getOstream(const char *destination);
+            /**
+            * @brief Get configured color use.
+            *
+            * @return Flag to know if color needs to be used.
+            */
+            static bool getColor();
 
         public:
             /**
