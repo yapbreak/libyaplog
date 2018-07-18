@@ -1,11 +1,5 @@
 #include "yaplog.h"
 
-__attribute__((constructor)) static void yaplog_static_init()
-{
-    logger::setDestinationVariable(YAPLOG_DEST_DEFAULT);
-    logger::setLevelVariable(YAPLOG_LEVEL_DEFAULT);
-}
-
 __attribute__((destructor)) static void yaplog_static_deinit()
 {
     logger::unsetDestinationVariable();
