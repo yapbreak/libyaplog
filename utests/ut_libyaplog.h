@@ -615,15 +615,15 @@ TEST(colorconf, alllogs_color_on_settings)
     givelog(log_level::info) << "Info";
     givelog(log_level::debug) << "Debug";
     givelog(log_level::trace) << "Trace";
-    std::string expected("[F] file2:38(function2) Fatal\n"
-                         "[A] file2:38(function2) Alert\n"
-                         "[C] file2:38(function2) Crit\n"
-                         "[E] file2:38(function2) Error\n"
-                         "[W] file2:38(function2) Warning\n"
-                         "[N] file2:38(function2) Notice\n"
-                         "[I] file2:38(function2) Info\n"
-                         "[D] file2:38(function2) Debug\n"
-                         "[T] file2:38(function2) Trace\n"
+    std::string expected("\x1b[101;97;1m[F] file2:38(function2)\x1b[0m Fatal\n"
+                         "\x1b[105;97;1m[A] file2:38(function2)\x1b[0m Alert\n"
+                         "\x1b[101;1m[C] file2:38(function2)\x1b[0m Crit\n"
+                         "\x1b[91;1m[E] file2:38(function2)\x1b[0m Error\n"
+                         "\x1b[93;1m[W] file2:38(function2)\x1b[0m Warning\n"
+                         "\x1b[94;1m[N] file2:38(function2)\x1b[0m Notice\n"
+                         "\x1b[92;1m[I] file2:38(function2)\x1b[0m Info\n"
+                         "\x1b[97;1m[D] file2:38(function2)\x1b[0m Debug\n"
+                         "\x1b[1m[T] file2:38(function2)\x1b[0m Trace\n"
                         );
     check_file_content("color_output.log", expected);
 };
