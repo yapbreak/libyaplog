@@ -1,14 +1,51 @@
 # ChangeLog
 
-2018-07-17	Adrien Oliva <olivaa@yapbreak.fr>
 
-	* Initial release of libyaplog
+## 1.1.0
 
-2018-07-17	Adrien Oliva <olivaa@yapbreak.fr>
+Colored release
 
-	* GTLAB #3 - Remove CSER reference
+2018-07-18	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
 
-2018-07-12	Adrien Oliva <olivaa@yapbreak.fr>
+	* Prepare 1.1.0 color release
+	* Merge branch '7-add-color' into 'master'
+	* GTLAB #7 feat(color): Add color
+	* Merge branch '6-create-configuration-for-color' into 'master'
+	* GTLAB #6 test(conf): Create configuration for color
+	* GTLAB #6 feat(conf): Create configuration for color
 
-	* GTLAB #2 - Improve test
-	* GTLAB #1 - Import logger from libcomserial
+## 1.0.1
+
+Hotfix release
+
+2018-07-18	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
+
+	* Merge branch '5-custom-configuration' into 'master'
+	* GTLAB #5 test(configuration): Custom configuration
+	* GTLAB #5 fix(conf): Custom configuration
+
+
+## 1.0.0
+
+Release 1.0.0
+
+2018-07-17	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
+
+	* fix(libtool) Fix libtool versioning
+	* Merge branch '4-packaging' into 'master'
+	* docs(samples): Add samples
+	* build(release): Release 1.0.0 preparation
+	* Merge branch '3-remove-cser-reference' into 'master'
+	* feat(conf): Allow user to set conf variable
+
+2018-07-12	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
+
+	* Merge branch '2-improve-test' into 'master'
+	* GTLAB #2 test(coverage): Improve test coverage
+	* Merge branch '1-import' into 'master'
+	* GTLAB #1 feat(all): Import functionnal code from libcomserial
+
+2018-07-11	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
+
+	* Initialize repository
+
