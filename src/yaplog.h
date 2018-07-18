@@ -96,8 +96,10 @@ namespace logger {
     */
     void setDestinationVariable(const char *dest);
     void setLevelVariable(const char *level);
+    void setColorVariable(const char *color);
     void unsetDestinationVariable();
     void unsetLevelVariable();
+    void unsetColorVariable();
 };
 
 #endif /* end of include guard: YAPLOG_H_UGV90DZC */

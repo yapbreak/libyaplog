@@ -8,6 +8,7 @@
 
 #define YAPLOG_LEVEL_DEFAULT "LOGLEVEL"
 #define YAPLOG_DEST_DEFAULT  "LOGDESTINATION"
+#define YAPLOG_COLOR_DEFAULT "LOGCOLOR"
 
 namespace logger {
 
@@ -158,6 +159,12 @@ namespace logger {
             * @return Level environment variable
             */
             static const char *getLevelVariable();
+            /**
+            * @brief Get environment variable to check for log color to show.
+            *
+            * @return Color environment variable
+            */
+            static const char *getColorVariable();
 
             /**
             * @brief Environment variable name of log destination
@@ -168,6 +175,10 @@ namespace logger {
             * @brief Environment variable name of log level configuration.
             */
             static char *s_level;
+            /**
+            * @brief Environment variable name of log color configuration.
+            */
+            static char *s_color;
 
         public:
             /**
@@ -183,6 +194,12 @@ namespace logger {
             */
             static void setLevelVariable(const char *level);
             /**
+            * @brief Set environment variable to check for log color.
+            *
+            * @param color New color environement variable
+            */
+            static void setColorVariable(const char *color);
+            /**
             * @brief Unset environment variable to check for log file destination.
             */
             static void unsetDestinationVariable();
@@ -190,6 +207,10 @@ namespace logger {
             * @brief Unset environment variable to check for log level.
             */
             static void unsetLevelVariable();
+            /**
+            * @brief Unset environment variable to check for log color.
+            */
+            static void unsetColorVariable();
     };
 
     /**
