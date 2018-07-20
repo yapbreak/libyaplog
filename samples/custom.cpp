@@ -9,14 +9,14 @@
  * Then, set variable Customvariable and Customdestination to control logs
  * output.
  */
+#define LOG_LEVEL "Customvariable"
+#define LOG_DEST "Customdestination"
+
 #include <iostream>
 #include <yaplog.h>
 
 int main(int argc, const char *argv[])
 {
-    logger::setLevelVariable("Customvariable");
-    logger::setDestinationVariable("Customdestination");
-
     int value = 42;
     const char *cstring = "<Works with cstring>";
     char test[225];

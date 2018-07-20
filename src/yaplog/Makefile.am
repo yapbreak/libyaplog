@@ -13,4 +13,4 @@ libinternalyaplog_la_SOURCES += level.h
 libinternalyaplog_la_SOURCES += loglocation.h
 
 yaplogdir = $(includedir)/yaplog
-yaplog_HEADERS = dump.h internallog.h level.h loglocation.h
+yaplog_HEADERS = conf.h dump.h internallog.h level.h loglocation.h
