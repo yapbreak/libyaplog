@@ -5,6 +5,7 @@ __attribute__((destructor)) static void yaplog_static_deinit()
     logger::unsetDestinationVariable();
     logger::unsetLevelVariable();
     logger::unsetColorVariable();
+    logger::unsetInfoVariable();
 }
 
 
@@ -23,6 +24,11 @@ void logger::setColorVariable(const char *color)
     InternalLog::setColorVariable(color);
 }
 
+void logger::setInfoVariable(const char *info)
+{
+    InternalLog::setInfoVariable(info);
+}
+
 void logger::unsetDestinationVariable()
 {
     InternalLog::unsetDestinationVariable();
@@ -37,3 +43,9 @@ void logger::unsetColorVariable()
 {
     InternalLog::unsetColorVariable();
 }
+
+void logger::unsetInfoVariable()
+{
+    InternalLog::unsetInfoVariable();
+}
+

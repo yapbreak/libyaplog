@@ -11,6 +11,7 @@ using namespace logger;
 char *InternalLog::s_destination = NULL;
 char *InternalLog::s_level = NULL;
 char *InternalLog::s_color = NULL;
+char *InternalLog::s_info = NULL;
 
 InternalLog::InternalLog(log_level level, const log_location &loc,
                          std::ostream *destination,
@@ -62,11 +63,13 @@ void InternalLog::print_header()
 {
     bool color = getColor();
     (*m_output) << color_start(color)
-                << "[" << char_from_level(m_level) << "] "
-                << m_location.m_file << ":"
-                << m_location.m_line << "("
-                << m_location.m_function << ")"
-                << color_end(color) << " ";
+                << "[" << char_from_level(m_level) << "]";
+    if (getInfo()) {
+        (*m_output) << " " << m_location.m_file << ":"
+                    << m_location.m_line << "("
+                    << m_location.m_function << ")";
+    }
+    (*m_output) << color_end(color) << " ";
 }
 
 std::ostream *InternalLog::getOstream(const char *destination)
@@ -138,6 +141,11 @@ const char *InternalLog::getColorVariable()
     return s_color ? s_color : YAPLOG_COLOR_DEFAULT;
 }
 
+const char *InternalLog::getInfoVariable()
+{
+    return s_info ? s_info : YAPLOG_INFO_DEFAULT;
+}
+
 void InternalLog::setDestinationVariable(const char *dest)
 {
     unsetDestinationVariable();
@@ -154,6 +162,12 @@ void InternalLog::setColorVariable(const char *color)
 {
     unsetColorVariable();
     s_color = strdup(color);
+}
+
+void InternalLog::setInfoVariable(const char *info)
+{
+    unsetInfoVariable();
+    s_info = strdup(info);
 }
 
 void InternalLog::unsetDestinationVariable()
@@ -177,6 +191,13 @@ void InternalLog::unsetColorVariable()
     s_color = NULL;
 }
 
+void InternalLog::unsetInfoVariable()
+{
+    if (s_info != NULL)
+        free(static_cast<void *>(s_info));
+    s_info = NULL;
+}
+
 bool InternalLog::getColor()
 {
     const char *color = std::getenv(getColorVariable());
@@ -191,6 +212,17 @@ bool InternalLog::getColor()
         }
     }
 }
+
+bool InternalLog::getInfo()
+{
+    const char *info = std::getenv(getInfoVariable());
+    if (info == NULL) {
+        return false;
+    } else {
+        return (strcmp(info, "debug") == 0);
+    }
+}
+
 
 const char *InternalLog::color_start(bool color)
 {
