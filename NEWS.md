@@ -1,15 +1,13 @@
 # News
 
 
-## 1.1.0
+## 1.2.0
 
-Colored release
+Lightweight release
 
-2018-07-18	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
+2018-07-20	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
 
-	* Prepare 1.1.0 color release
-	* Merge branch '7-add-color' into 'master'
-	* GTLAB #7 feat(color): Add color
-	* Merge branch '6-create-configuration-for-color' into 'master'
-	* GTLAB #6 test(conf): Create configuration for color
-	* GTLAB #6 feat(conf): Create configuration for color
+	* Prepare release 1.2.0
+	* Merge branch '8-hide-code-location-information' into 'master'
+	* GTLAB #8 feat(debug): Hide code location information
+
