@@ -3,6 +3,7 @@
 
 #include <yaplog/level.h>
 #include <yaplog/loglocation.h>
+#include <yaplog/conf.h>
 
 #include <ostream>
 
@@ -25,12 +26,11 @@ namespace logger {
             *
             * @param level The log level of the given logger.
             * @param loc Information of location of log in code base.
-            * @param destination Standard output stream to be used.
-            * @param system_level System log level.
+            * @param c Logger configuration
             */
-            InternalLog(log_level level, const log_location &loc,
-                        std::ostream *destination,
-                        log_level system_level = log_level::trace);
+            InternalLog(log_level level,
+                        const log_location &loc,
+                        const conf &c);
 
             virtual ~InternalLog();
 
@@ -40,15 +40,6 @@ namespace logger {
             template<typename T>
             friend const InternalLog &operator<<(const InternalLog &, const T *);
 
-            /**
-            * @brief Additional overload to handle ostream specific IO
-            *         manipulators
-            *
-            * @param out Internal logger where IO manipulators must aplly.
-            * @param f IO function manipulators.
-            *
-            * @return Internal logger instance.
-            */
             friend const InternalLog &operator<<(const InternalLog &out,
                                                  std::ostream &(*f)(std::ostream &));
 
@@ -99,69 +90,6 @@ namespace logger {
 
         protected:
             /**
-            * @brief Get configured output stream where log are pat.
-            *
-            * @param destination Environment variable to use.
-            *
-            * @return Output stream to be used by logger, depending on
-            *         environment variable given by `destination`.
-            */
-            static std::ostream *getOstream(const char *destination);
-            /**
-            * @brief Get configured color use.
-            *
-            * @return Flag to know if color needs to be used.
-            */
-            static bool getColor();
-            /**
-            * @brief Get configured information level to use
-            *
-            * @return Flag to know if file, line and function needs to be
-            *         printed.
-            */
-            static bool getInfo();
-
-        public:
-            /**
-            * @brief Get configured output stream where log are put.
-            *
-            * @return Output stream to be used by logger, depending on
-            *         configured environment variable.
-            *
-            * If no environment variable is set, default is std::cerr.
-            * When configured env var is set to `stdout` or `stderr`, stream
-            * is respectively redirected to std::cout or std::cerr, otherwise,
-            * logger considers variable content as a filename and try to open
-            * it in append mode. If file does not exists, logger create file.
-            * Upon failure, logger falls back to std::cerr.
-            */
-            static std::ostream *getOstream();
-
-            /**
-            * @brief Close the given output stream properly.
-            *
-            * @param os Output stream to close.
-            */
-            static void closeOstream(std::ostream *os);
-
-            /**
-            * @brief Get configured logger level to show.
-            *
-            * @return Log level used by logger, depending on configured
-            *         environment variable.
-            *
-            * When configured env var is set to any number between 0 and 9,
-            * logger directly use the log level and print to output every log
-            * message with level lower or equal to the given system log level.
-            * If `LOGLEVEL` is set to a number lower than 0, 0 is used.
-            * If `LOGLEVEL` is set to a number higher than 9, 9 is used.
-            * If `LOGLEVEL` is not set to a number, 0 is used.
-            * If no environment variable is set, default is 0.
-            */
-            static log_level getSystemLevel();
-
-        protected:
-            /**
             * @brief Log level.
             */
             log_level m_level;
@@ -170,99 +98,9 @@ namespace logger {
             */
             log_location m_location;
             /**
-            * @brief Linked output stream.
+            * @brief Log configuration.
             */
-            std::ostream *m_output;
-            /**
-            * @brief System log level.
-            */
-            log_level m_systemlevel;
-
-        protected:
-            /**
-            * @brief Get environment variable to check for log file destination.
-            *
-            * @return Destination environment variable
-            */
-            static const char *getDestinationVariable();
-            /**
-            * @brief Get environment variable to check for log level to show.
-            *
-            * @return Level environment variable
-            */
-            static const char *getLevelVariable();
-            /**
-            * @brief Get environment variable to check for log color to show.
-            *
-            * @return Color environment variable
-            */
-            static const char *getColorVariable();
-            /**
-            * @brief Get environment variable to check for log info to show.
-            *
-            * @return Info environment variable
-            */
-            static const char *getInfoVariable();
-
-            /**
-            * @brief Environment variable name of log destination
-            *        configuration.
-            */
-            static char *s_destination;
-            /**
-            * @brief Environment variable name of log level configuration.
-            */
-            static char *s_level;
-            /**
-            * @brief Environment variable name of log color configuration.
-            */
-            static char *s_color;
-            /**
-            * @brief Environment variable name of log info configuration.
-            */
-            static char *s_info;
-
-        public:
-            /**
-            * @brief Set environment variable to check for log file destination.
-            *
-            * @param dest New destination environement variable
-            */
-            static void setDestinationVariable(const char *dest);
-            /**
-            * @brief Set environment variable to check for log level.
-            *
-            * @param level New level environement variable
-            */
-            static void setLevelVariable(const char *level);
-            /**
-            * @brief Set environment variable to check for log color.
-            *
-            * @param color New color environement variable
-            */
-            static void setColorVariable(const char *color);
-            /**
-            * @brief Set environment variable to check for log information.
-            *
-            * @param info New info environement variable
-            */
-            static void setInfoVariable(const char *info);
-            /**
-            * @brief Unset environment variable to check for log file destination.
-            */
-            static void unsetDestinationVariable();
-            /**
-            * @brief Unset environment variable to check for log level.
-            */
-            static void unsetLevelVariable();
-            /**
-            * @brief Unset environment variable to check for log color.
-            */
-            static void unsetColorVariable();
-            /**
-            * @brief Unset environment variable to check for log info.
-            */
-            static void unsetInfoVariable();
+            const conf &m_conf;
     };
 
     /**
@@ -277,8 +115,8 @@ namespace logger {
     template<typename T>
     inline const InternalLog &operator<<(const InternalLog &out, const T &value)
     {
-        if (out.m_level <= out.m_systemlevel)
-            (*out.m_output) << value;
+        if (out.m_level <= out.m_conf.getSystemLevel())
+            (*out.m_conf.getOutput()) << value;
         return out;
     }
     /**
@@ -293,16 +131,25 @@ namespace logger {
     template<typename T>
     inline const InternalLog &operator<<(const InternalLog &out, const T *value)
     {
-        if (out.m_level <= out.m_systemlevel)
-            (*out.m_output) << value;
+        if (out.m_level <= out.m_conf.getSystemLevel())
+            (*out.m_conf.getOutput()) << value;
         return out;
     }
 
+    /**
+    * @brief Additional overload to handle ostream specific IO
+    *         manipulators
+    *
+    * @param out Internal logger where IO manipulators must aplly.
+    * @param f IO function manipulators.
+    *
+    * @return Internal logger instance.
+    */
     inline const InternalLog &operator<<(const InternalLog &out,
                                          std::ostream &(*f)(std::ostream &))
     {
-        if (out.m_level <= out.m_systemlevel)
-            (*out.m_output) << f;
+        if (out.m_level <= out.m_conf.getSystemLevel())
+            (*out.m_conf.getOutput()) << f;
         return out;
     }
 
