@@ -16,11 +16,13 @@ TEST_GROUP(internallog)
 {
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         my_real_stream = new std::ostringstream();
     };
 
     void teardown()
     {
+        unsetenv("LOGINFO");
     };
 
     std::ostringstream *my_real_stream;
@@ -82,6 +84,7 @@ TEST_GROUP(customout)
     const char *destination = "unittests_customout.log";
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         unsetenv("LOGDESTINATION");
         unsetenv("LOGLEVEL");
         unlink(destination);
@@ -89,6 +92,7 @@ TEST_GROUP(customout)
 
     void teardown()
     {
+        unsetenv("LOGINFO");
         unlink(destination);
         unsetenv("LOGDESTINATION");
         unsetenv("LOGLEVEL");
@@ -401,12 +405,14 @@ TEST_GROUP(stdoutlog)
 {
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         setenv("LOGDESTINATION", "stdout", 1);
         setenv("LOGLEVEL", "9", 1);
     }
 
     void teardown()
     {
+        unsetenv("LOGINFO");
         unsetenv("LOGDESTINATION");
         unsetenv("LOGLEVEL");
     }
@@ -429,12 +435,14 @@ TEST_GROUP(stderrlog)
 {
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         setenv("LOGDESTINATION", "stderr", 1);
         setenv("LOGLEVEL", "9", 1);
     }
 
     void teardown()
     {
+        unsetenv("LOGINFO");
         unsetenv("LOGDESTINATION");
         unsetenv("LOGLEVEL");
     }
@@ -457,12 +465,14 @@ TEST_GROUP(invalidfilelog)
 {
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         setenv("LOGDESTINATION", "/probablynotexisting/path/to/a/logfile", 1);
         setenv("LOGLEVEL", "9", 1);
     }
 
     void teardown()
     {
+        unsetenv("LOGINFO");
         unsetenv("LOGDESTINATION");
         unsetenv("LOGLEVEL");
     }
@@ -486,6 +496,7 @@ TEST_GROUP(customconfvariable)
 {
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         logger::setDestinationVariable("MYCUSTOM_DEST");
         logger::setLevelVariable("MYCUSTOM_LEVEL");
         setenv("MYCUSTOM_DEST", "custom_output.log", 1);
@@ -496,6 +507,7 @@ TEST_GROUP(customconfvariable)
 
     void teardown()
     {
+        unsetenv("LOGINFO");
         unsetenv("MYCUSTOM_DEST");
         unsetenv("MYCUSTOM_LEVEL");
         unsetenv("LOGLEVEL");
@@ -536,6 +548,7 @@ TEST_GROUP(colorconf)
 {
     void setup()
     {
+        setenv("LOGINFO", "debug", 1);
         logger::setColorVariable("MYCUSTOM_COLOR");
         setenv("LOGDESTINATION", "color_output.log", 1);
         setenv("LOGLEVEL", "9", 1);
@@ -543,6 +556,7 @@ TEST_GROUP(colorconf)
 
     void teardown()
     {
+        unsetenv("LOGINFO");
         unsetenv("MYCUSTOM_COLOR");
         logger::unsetColorVariable();
         unlink("color_output.log");
@@ -654,6 +668,130 @@ TEST(colorconf, alllogs_color_unauth_values_settings)
                          "[T] file2:38(function2) Trace\n"
                         );
     check_file_content("color_output.log", expected);
+};
+
+TEST_GROUP(infocontrol)
+{
+    void setup()
+    {
+        setenv("LOGDESTINATION", "info_output.log", 1);
+        setenv("LOGLEVEL", "9", 1);
+    }
+
+    void teardown()
+    {
+        unlink("info_output.log");
+        unsetenv("LOGLEVEL");
+        unsetenv("LOGDESTINATION");
+        unsetenv("LOGINFO");
+        logger::unsetInfoVariable();
+    }
+};
+
+TEST(infocontrol, alllog_noinfo)
+{
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] Fatal\n"
+                         "[A] Alert\n"
+                         "[C] Crit\n"
+                         "[E] Error\n"
+                         "[W] Warning\n"
+                         "[N] Notice\n"
+                         "[I] Info\n"
+                         "[D] Debug\n"
+                         "[T] Trace\n"
+                        );
+    check_file_content("info_output.log", expected);
+};
+
+TEST(infocontrol, alllog_info)
+{
+    setenv("LOGINFO", "debug", 1);
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    setenv("LOGINFO", "debug_ornot", 1);
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    setenv("LOGINFO", "debug", 1);
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[W] Warning\n"
+                         "[N] Notice\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[D] file2:38(function2) Debug\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("info_output.log", expected);
+};
+
+TEST(infocontrol, customvar_noinfo)
+{
+    logger::setInfoVariable("MYCUSTOM_INFO");
+    setenv("LOGINFO", "debug", 1);
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    givelog(log_level::warn) << "Warning";
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] Fatal\n"
+                         "[A] Alert\n"
+                         "[C] Crit\n"
+                         "[E] Error\n"
+                         "[W] Warning\n"
+                         "[N] Notice\n"
+                         "[I] Info\n"
+                         "[D] Debug\n"
+                         "[T] Trace\n"
+                        );
+    check_file_content("info_output.log", expected);
+};
+
+TEST(infocontrol, customvar_info)
+{
+    logger::setInfoVariable("MYCUSTOM_INFO");
+    setenv("MYCUSTOM_INFO", "debug", 1);
+    givelog(log_level::fatal) << "Fatal";
+    givelog(log_level::alert) << "Alert";
+    givelog(log_level::crit) << "Crit";
+    givelog(log_level::error) << "Error";
+    setenv("MYCUSTOM_INFO", "toto", 1);
+    givelog(log_level::warn) << "Warning";
+    setenv("MYCUSTOM_INFO", "debug", 1);
+    givelog(log_level::notice) << "Notice";
+    givelog(log_level::info) << "Info";
+    givelog(log_level::debug) << "Debug";
+    givelog(log_level::trace) << "Trace";
+    std::string expected("[F] file2:38(function2) Fatal\n"
+                         "[A] file2:38(function2) Alert\n"
+                         "[C] file2:38(function2) Crit\n"
+                         "[E] file2:38(function2) Error\n"
+                         "[W] Warning\n"
+                         "[N] file2:38(function2) Notice\n"
+                         "[I] file2:38(function2) Info\n"
+                         "[D] file2:38(function2) Debug\n"
+                         "[T] file2:38(function2) Trace\n"
+                        );
+    check_file_content("info_output.log", expected);
+    unsetenv("MYCUSTOM_INFO");
 };
 
 #endif /* end of include guard: UT_LIBYAPLOG_H_SHF9IC0C */

@@ -9,6 +9,7 @@
 #define YAPLOG_LEVEL_DEFAULT "LOGLEVEL"
 #define YAPLOG_DEST_DEFAULT  "LOGDESTINATION"
 #define YAPLOG_COLOR_DEFAULT "LOGCOLOR"
+#define YAPLOG_INFO_DEFAULT  "LOGINFO"
 
 namespace logger {
 
@@ -112,6 +113,13 @@ namespace logger {
             * @return Flag to know if color needs to be used.
             */
             static bool getColor();
+            /**
+            * @brief Get configured information level to use
+            *
+            * @return Flag to know if file, line and function needs to be
+            *         printed.
+            */
+            static bool getInfo();
 
         public:
             /**
@@ -189,6 +197,12 @@ namespace logger {
             * @return Color environment variable
             */
             static const char *getColorVariable();
+            /**
+            * @brief Get environment variable to check for log info to show.
+            *
+            * @return Info environment variable
+            */
+            static const char *getInfoVariable();
 
             /**
             * @brief Environment variable name of log destination
@@ -203,6 +217,10 @@ namespace logger {
             * @brief Environment variable name of log color configuration.
             */
             static char *s_color;
+            /**
+            * @brief Environment variable name of log info configuration.
+            */
+            static char *s_info;
 
         public:
             /**
@@ -224,6 +242,12 @@ namespace logger {
             */
             static void setColorVariable(const char *color);
             /**
+            * @brief Set environment variable to check for log information.
+            *
+            * @param info New info environement variable
+            */
+            static void setInfoVariable(const char *info);
+            /**
             * @brief Unset environment variable to check for log file destination.
             */
             static void unsetDestinationVariable();
@@ -235,6 +259,10 @@ namespace logger {
             * @brief Unset environment variable to check for log color.
             */
             static void unsetColorVariable();
+            /**
+            * @brief Unset environment variable to check for log info.
+            */
+            static void unsetInfoVariable();
     };
 
     /**
