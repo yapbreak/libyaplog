@@ -6,8 +6,6 @@ SUBDIRS = fixtures
 
 TESTS = ut_libyaplog.xtest
 
-noinst_PROGRAMS = $(TESTS)
-
 check_PROGRAMS = $(TESTS)
 
 ut_libyaplog_xtest_SOURCES  = ut_libyaplog.h

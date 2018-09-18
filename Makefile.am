@@ -107,4 +107,6 @@ clean-local:
 
 .PHONY: $(ALLPHONY)
 
-dist_data_DATA = samples
+datadir = $(prefix)/share/libyaplog
+dist_data_DATA  = samples/custom.cpp
+dist_data_DATA += samples/sample.cpp
