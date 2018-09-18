@@ -11,6 +11,8 @@ noinst_PROGRAMS = $(TESTS)
 check_PROGRAMS = $(TESTS)
 
 ut_libyaplog_xtest_SOURCES  = ut_libyaplog.h
+ut_libyaplog_xtest_SOURCES += ut_conf.h
+ut_libyaplog_xtest_SOURCES += ut_dump.h
 ut_libyaplog_xtest_SOURCES += main.cpp
 ut_libyaplog_xtest_CFLAGS = $(TESTCFLAGS) -include $(TEST_ROOT)/fixtures/fixtures.h
 ut_libyaplog_xtest_CXXFLAGS = $(TESTCXXFLAGS) -include $(TEST_ROOT)/fixtures/fixtures.h

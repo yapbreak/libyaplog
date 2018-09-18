@@ -3,6 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 include Makefile.common
 
 SOURCE_DIR  = src
+SOURCE_DIR += doc
 if CPPUTEST
 SOURCE_DIR += utests
 endif
@@ -105,3 +106,5 @@ clean-local:
 	@rm -rf $(CLEANFILES)
 
 .PHONY: $(ALLPHONY)
+
+dist_data_DATA = samples
