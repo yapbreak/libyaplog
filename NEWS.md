@@ -1,11 +1,11 @@
 # News
 
 
-## 2.0.2
+## 2.0.2-1
 
-Install release
+Fix release
 
 2018-09-18	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
 
-	* build(release): Prepare release 2.0.2
-	* fix(install): Add sample to the right install directory
+	* build(release): Prepare release 2.0.2-1
+	* fix(path): Update share/ path
