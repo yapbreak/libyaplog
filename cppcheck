@@ -24,4 +24,12 @@ if [ "$output" == "xml" ]; then
     OUTPUT_FLAGS=("--xml" "--xml-version=2")
 fi
 
-/usr/bin/cppcheck --enable=all --verbose --quiet                   --suppress=missingIncludeSystem                   --suppress=unusedFunction                   -I./src                   --inline-suppr                   "${OUTPUT_FLAGS[@]}"                   "$@"                   src/ demo/
+/usr/bin/cppcheck --enable=all \
+                  --verbose \
+                  --quiet \
+                  --suppress=missingIncludeSystem \
+                  -I./src \
+                  --inline-suppr \
+                  "${OUTPUT_FLAGS[@]}" \
+                  "$@" \
+                  src/ demo/
