@@ -1,12 +1,12 @@
 # News
 
 
-## 2.0.0
+## 2.0.1
 
-Wonderful release
+Go to release manager
 
-2018-07-20	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
+2018-09-18	Adrien Oliva <olivaa+gitlab@yapbreak.fr>
 
-	* Prepare 2.0.0 release
-	* Merge branch '9-avoid-static' into 'master' (!)
-	* GTLAB #9 feat(usecase): Avoid static
+	* build(release): Prepare release 2.0.1
+	* fix(cppcheck): Remove Cppcheck warning
+	* fix(release): Get all files in dist package
